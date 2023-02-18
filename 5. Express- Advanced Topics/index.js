@@ -8,6 +8,8 @@ const app = express();
 const helmet = require('helmet');
 const morgan = require('morgan');
 
+app.set('view engine', 'pug');
+app.set('views', './views'); // This is usually the default, so its optional
 
 app.use(express.json());
 app.use(logger);
@@ -38,7 +40,11 @@ const courses = [
 
 
 app.get('/', (req, res) => {
-    res.send('Hello world');
+    const context = {
+        'title': 'My Express App',
+        'message': 'Hello'
+    }
+    res.render('index', context)
 })
 
 app.get('/api/courses', (req, res) => {
