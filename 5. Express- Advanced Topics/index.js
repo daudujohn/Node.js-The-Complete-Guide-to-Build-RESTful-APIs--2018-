@@ -2,9 +2,11 @@ const startupDebugger = require('debug')('app:startup');
 const dbDebugger = require('debug')('app:db')
 const config = require('config')
 const Joi = require('joi');
-const logger = require("./logger")
+const logger = require("./middleware/logger")
 const express = require('express');
 const app = express();
+const courses = require('./routes/courses')
+const home = require('./routes/home')
 const helmet = require('helmet');
 const morgan = require('morgan');
 
@@ -16,6 +18,8 @@ app.use(logger);
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 app.use(helmet());
+app.use('/api/courses', courses);
+app.use('/', home);
 
 // Configuration
 console.log(`Application Name: ${config.get('name')}`)
@@ -30,22 +34,6 @@ if (app.get('env') === 'development'){
 
 // Some db work
 dbDebugger('Connected to database...')
-
-const courses = [
-    {id: 1, name: 'course1'},
-    {id: 2, name: 'course2'},
-    {id: 3, name: 'course3'},
-    {id: 4, name: 'course4'},
-]
-
-
-app.get('/', (req, res) => {
-    const context = {
-        'title': 'My Express App',
-        'message': 'Hello'
-    }
-    res.render('index', context)
-})
 
 
 // To get route parameters as an object. Route parameters are used for mandatory route information
