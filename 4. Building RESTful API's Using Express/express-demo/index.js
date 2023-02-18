@@ -15,11 +15,11 @@ app.get('/', (req, res) => {
     res.send('Hello world');
 })
 
-app.get('/api/courses', (req, res) => {
+app.get('/', (req, res) => {
     res.send(courses);
 });
 
-app.post('/api/courses', (req, res) => {
+app.post('/', (req, res) => {
     const schema = {
         name: Joi.string().min(3).required(), 
         id: Joi.number()
@@ -41,7 +41,7 @@ app.post('/api/courses', (req, res) => {
     res.send(course);
 })
 
-app.put('/api/courses/:id', (req, res) => {
+app.put('/:id', (req, res) => {
     // look up the course
     // if it doesn't exist, return 404
     const course = courses.find(c => c.id === parseInt(req.params.id))
@@ -67,7 +67,7 @@ app.put('/api/courses/:id', (req, res) => {
     res.send(course)
 })
 
-app.delete('/api/courses/:id', (req, res) => {
+app.delete('/:id', (req, res) => {
     // check if id exists
     // if it doesnt, return 404
     const course = courses.find(c => c.id === parseInt(req.params.id))
@@ -85,7 +85,7 @@ app.delete('/api/courses/:id', (req, res) => {
     res.send(course)
 })
 
-app.get('/api/courses/:id', (req, res) => {
+app.get('/:id', (req, res) => {
     const course = courses.find(c => c.id === parseInt(req.params.id))
     if (!course) return res.status(404).send(`Course ${req.params.id} was not found.`)
     res.send(course);
