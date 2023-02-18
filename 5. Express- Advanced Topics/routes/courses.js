@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/api/courses', (req, res) => {
+router.get('/', (req, res) => {
     res.send(courses);
 });
 
-router.post('/api/courses', (req, res) => {
+router.post('/', (req, res) => {
     const schema = {
         name: Joi.string().min(3).required(), 
         id: Joi.number()
@@ -27,7 +27,7 @@ router.post('/api/courses', (req, res) => {
     res.send(course);
 })
 
-router.put('/api/courses/:id', (req, res) => {
+router.put('/:id', (req, res) => {
     // look up the course
     // if it doesn't exist, return 404
     const course = courses.find(c => c.id === parseInt(req.params.id))
@@ -53,7 +53,7 @@ router.put('/api/courses/:id', (req, res) => {
     res.send(course)
 })
 
-router.delete('/api/courses/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
     // check if id exists
     // if it doesnt, return 404
     const course = courses.find(c => c.id === parseInt(req.params.id))
@@ -71,7 +71,7 @@ router.delete('/api/courses/:id', (req, res) => {
     res.send(course)
 })
 
-router.get('/api/courses/:id', (req, res) => {
+router.get('/:id', (req, res) => {
     const course = courses.find(c => c.id === parseInt(req.params.id))
     if (!course) return res.status(404).send(`Course ${req.params.id} was not found.`)
     res.send(course);
