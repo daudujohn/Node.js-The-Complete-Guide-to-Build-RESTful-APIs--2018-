@@ -1,11 +1,14 @@
 console.log('before')
-getUser(1, function(user) {
-    getRepositories(user.gitHubUsername, repos => {
-        console.log('Repos', repos)
-    })
-})
+getUser(1, getRepos)
 console.log('After')
 
+function getRepos(user) {
+    getRepositories(user.gitHubUsername, displayRepositories)
+}
+
+function displayRepositories(repos){
+    console.log('Repos', repos)
+}
 function getUser(id, callback){
     setTimeout(() => {
         console.log('fetching user data...');
