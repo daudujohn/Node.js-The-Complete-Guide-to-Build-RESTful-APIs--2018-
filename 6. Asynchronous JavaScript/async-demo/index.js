@@ -1,4 +1,9 @@
 console.log('before')
+getUser(23)
+    .then(user => getRepositories(user.gitHubUsername))
+    .then(repos => getCommits(repos[0]))
+    .then(commits => console.log('Commits', commits))
+    .catch(err => console.log('Error', err.message));
 console.log('After')
 
 function getUser(id){
@@ -13,6 +18,7 @@ function getUser(id){
 function getRepositories(username){
     return new Promise((resolve, reject) => {
         setTimeout(() => {
+            console.log('Getting repositories')
             resolve(['repo1', 'repo2', 'repo3']);
         }, 2000);
     })
