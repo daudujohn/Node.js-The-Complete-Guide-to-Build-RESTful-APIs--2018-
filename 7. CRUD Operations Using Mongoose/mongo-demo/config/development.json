@@ -1,0 +1,6 @@
+{
+    "database": {
+        "name": "mongodb",
+        "conn_string": "mongodb://localhost/playground"
+    }
+}
