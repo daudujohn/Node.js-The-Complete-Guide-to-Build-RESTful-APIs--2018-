@@ -46,7 +46,34 @@ async function countCourses(){
 
     console.log(count);
 }
-countCourses();
+// countCourses();
 
 
 // getCourses();
+
+// There are two approaches to update a document
+async function updateCourse(id) {
+    // Query first approach
+    // findById()
+    // Modify its properties
+    // save()
+    const course = await Course.findById(id);
+    if (!course) return;
+
+    course.isPublished = true;
+    course.author = 'Another author'
+    // or
+    course.set({
+        isPublished: true, 
+        author: 'Another author'
+    })
+
+    const result = await course.save()
+    console.log(result)
+
+    // Update first approach
+    // Update database directly
+    // Optionally: get the updated document
+}
+
+updateCourse();
