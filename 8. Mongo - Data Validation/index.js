@@ -1,26 +1,46 @@
-const dbDebug = require('debug')('app:db')
 const config = require('config')
 const mongoose = require('mongoose');
 mongoose.connect(config.get('database.conn_string'))
-    .then(() => dbDebug('Connected to MongoDB...'))
+    .then(() => console.log('Connected to MongoDB...'))
     .catch(err => console.error('Could not connect to MongoDB...', err.message))
 
 const courseSchema = new mongoose.Schema({
-    name: {type: String, required: true}, 
+    name: {
+        type: String, 
+        required: true, 
+        minlength: 3, 
+        maxlength: 255
+        // match: /pattern/
+    }, 
+    category: {
+        type: String, 
+        enum: ['web', 'mobile', 'network'], 
+        required: true
+    }, 
     author: {type: String, required: true}, 
     tags: [String], 
     date: {type: Date, default: Date.now},
-    isPublished: Boolean
+    isPublished: Boolean, 
+    price: {
+        type: Number, 
+        required: function() { // an arrow function will not work here
+            return this.isPublished
+        }, 
+        min: 10, 
+        max: 200
+    }
 })
 
 const Course = mongoose.model('Course', courseSchema);
 
 async function createCourse(){
     const course = new Course({
-        name: 'React Course', 
-        author: 'Mosh', 
-        'tags': ['react', 'frontend'], 
-        isPubslished: true
+        name: 'Vue Course', 
+        category: 'web',
+        author: 'Jackson', 
+        'tags': ['vue', 'frontend'], 
+        isPublished: true, 
+        price: 50
     })
     
     try{
@@ -31,6 +51,7 @@ async function createCourse(){
         console.log(ex.message)
     }
 }
+createCourse();
 
 async function getCourses(){
     const courses = await Course
@@ -51,8 +72,6 @@ async function countCourses(){
 
     console.log(count);
 }
-// countCourses();
-
 
 // getCourses();
 
