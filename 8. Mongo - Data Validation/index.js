@@ -6,8 +6,8 @@ mongoose.connect(config.get('database.conn_string'))
     .catch(err => console.error('Could not connect to MongoDB...', err.message))
 
 const courseSchema = new mongoose.Schema({
-    name: String, 
-    author: String, 
+    name: {type: String, required: true}, 
+    author: {type: String, required: true}, 
     tags: [String], 
     date: {type: Date, default: Date.now},
     isPublished: Boolean
