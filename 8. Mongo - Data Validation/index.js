@@ -26,7 +26,7 @@ const courseSchema = new mongoose.Schema({
             isAsync: true, 
             validator:  async function(v) {
                 setTimeout(() => {
-                    const res = typeof(v)==Array && v.length > 0;
+                    const res = typeof(v[0])==String && v.length > 0;
                     return res
                 }, 3000);
             },
