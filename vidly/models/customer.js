@@ -23,6 +23,8 @@ const customerSchema = new mongoose.Schema({
     }
 })
 
+const Customer = mongoose.model('Customer', customerSchema);
+
 
 function validateCustomer(schema, customer){
     return schema.validate(customer)
