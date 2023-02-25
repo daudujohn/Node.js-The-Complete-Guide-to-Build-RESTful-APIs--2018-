@@ -2,27 +2,7 @@ const mongoose = require('mongoose')
 const Joi = require('joi')
 const express = require('express');
 const router = express.Router();
-
-// create a valid schema
-const genreSchema = mongoose.Schema({
-    name: {
-        type: String, 
-        required: true, 
-        minlength: 3, 
-        maxlength: 50, 
-        validate: {
-            isAsync: true, 
-            validator: async function(value) {
-              const existingGenre = await mongoose.model('Genre').findOne({ name: value });
-              return !existingGenre;
-            },
-            message: 'Genre already exists',
-        },
-        trim: true, 
-    }
-})
-// create a model
-const Genre = mongoose.model('Genre', genreSchema);
+const {Genre, validateGenre} = require('../models/genre')
 
 router.get('/', async (req, res) => {
     try{
@@ -83,11 +63,11 @@ router.put('/:id', async (req, res) => {
         name: Joi.string().min(3).required()
     })
     const {error} = validateGenre(schema, req.body)
+    
     // if invalid, return 400
-
-    // if valid, update genre
     if (error) return res.status(400).send(error.details[0].message);
 
+    // if valid, update genre
     const genre = await Genre.findByIdAndUpdate(req.params.id, {
         name: req.body.name
     }, {
@@ -111,9 +91,5 @@ router.delete('/:id', async(req, res) => {
     // return deleted genre
     res.send(genre)
 })
-
-function validateGenre(schema, genre) {
-    return schema.validate(genre);
-}
 
 module.exports = router;
