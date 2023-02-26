@@ -1,4 +1,3 @@
-const { expression } = require('joi')
 const Joi = require('joi')
 const mongoose = require('mongoose')
 const Customer = require('./customer')
@@ -16,15 +15,7 @@ const movieSchema = new mongoose.Schema({
     genre: {
         type: genreSchema, 
         required: true, 
-    }, 
-    validate: {
-        isAsync: true, 
-        validator: async function(value) {
-          const existingMovie = await mongoose.model('Movie').findOne({ title: value });
-          return !existingMovie;
-        },
-        message: 'Movie already exists',
-    },
+    },  
     numberInStock: {
         type: Number, 
         required: true, 
@@ -37,17 +28,24 @@ const movieSchema = new mongoose.Schema({
         min: 0, 
         max: 255
     }, 
-})
+}, {validate: {
+    isAsync: true, 
+    validator: async function(value) {
+      const existingMovie = await mongoose.model('Movie').findOne({ title: value });
+      return !existingMovie;
+    },
+    message: 'Movie already exists',
+}})
 
 const Movie = mongoose.model('Movie', movieSchema);
 
 function validateMovie(movie){
-    const schema = {
+    const schema = Joi.object({
         title: Joi.string().min(5).max(50).required(), 
         genreId: Joi.string().required(), 
         numberInStock: Joi.number().min(0).required(), 
         dailyRentalRate: Joi.number().min(0).required()
-    }
+    })
     return schema.validate(movie)
 }
 
