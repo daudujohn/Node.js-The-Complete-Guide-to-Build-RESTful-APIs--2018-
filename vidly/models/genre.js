@@ -8,17 +8,16 @@ const genreSchema = mongoose.Schema({
         required: true, 
         minlength: 3, 
         maxlength: 50, 
-        validate: {
-            isAsync: true, 
-            validator: async function(value) {
-              const existingGenre = await mongoose.model('Genre').findOne({ name: value });
-              return !existingGenre;
-            },
-            message: 'Genre already exists',
-        },
         trim: true, 
     }
-})
+}, {validate: {
+    isAsync: true, 
+    validator: async function(value) {
+      const existingGenre = await mongoose.model('Genre').findOne({ name: value });
+      return !existingGenre;
+    },
+    message: 'Genre already exists',
+}})
 // create a model
 const Genre = mongoose.model('Genre', genreSchema);
 
