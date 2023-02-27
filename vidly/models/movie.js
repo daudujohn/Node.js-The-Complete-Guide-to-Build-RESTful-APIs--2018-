@@ -11,6 +11,14 @@ const movieSchema = new mongoose.Schema({
         maxlength: 255, 
         lowercase: true, 
         required: true, 
+        validate: {
+            isAsync: true, 
+            validator: async function(value) {
+              const existingMovie = await mongoose.model('Movie').findOne({ title: value });
+              return !existingMovie;
+            },
+            message: 'Movie already exists',
+        } 
     }, 
     genre: {
         type: genreSchema, 
@@ -20,22 +28,15 @@ const movieSchema = new mongoose.Schema({
         type: Number, 
         required: true, 
         min: 0, 
-        max: 255
+        max: 2552
     }, 
     dailyRentalRate: {
         type: Number, 
         required: true, 
         min: 0, 
         max: 255
-    }, 
-}, {validate: {
-    isAsync: true, 
-    validator: async function(value) {
-      const existingMovie = await mongoose.model('Movie').findOne({ title: value });
-      return !existingMovie;
-    },
-    message: 'Movie already exists',
-}})
+    }
+})
 
 const Movie = mongoose.model('Movie', movieSchema);
 
