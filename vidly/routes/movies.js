@@ -39,21 +39,27 @@ router.post('/', async(req, res) => {
     if (error) return res.status(400).send(error.details[0].message)
 
     // if valid, check if the genre of the movie exist before adding the movie
-    const genre = Genre.findById(req.body.genreId)
+    const genre = await Genre.findById(req.body.genreId)
     if (!genre) return res.status(400).send('Genre does not exist')
+    try{
+        let movie = new Movie({
+            title: req.body.title, 
+            genre: genre, 
+            numberInStock: req.body.numberInStock, 
+            dailyRentalRate: req.body.dailyRentalRate
+        });  
 
-    let movie = new Movie({
-        title: req.body.title, 
-        genre: {
-            _id: genre._id, 
-            name: genre.name
-        }, 
-        numberInStock: req.body.numberInStock, 
-        dailyRentalRate: req.body.dailyRentalRate
-    });
-
-    movie = await movie.save();
-    return res.send(movie)
+        movie = await movie.save();
+        return res.send(movie)
+    }
+    catch(ex){
+        for (field in ex.errors){
+            res.status(400).send(ex.errors[field].properties.message)
+            console.error('Error:', ex.errors[field].properties.message)
+        }
+    }
+    
+    
 })
 
 router.put('/:id', async(req, res) => {
@@ -62,14 +68,13 @@ router.put('/:id', async(req, res) => {
     if (error) return res.status(400).send(error.details[0].message)
     
     // validate the genre before updating the movie
-    const genre = Genre.findById(req.body.genreId)
+    const genre = await Genre.findById(req.body.genreId)
     if (!genre) return res.status(400).send('Genre does not exist')
 
     let updatedMovie = {
-        name: req.body.name, 
+        title: req.body.title, 
         numberInStock: req.body.numberInStock, 
         dailyRentalRate: req.body.dailyRentalRate, 
-        genreId: req.body.genreId
     }
     
     // update movie
