@@ -13,7 +13,10 @@ router.get('/', async(req, res) => {
 })
 
 router.get('/:id', async(req, res) => {
+    const rental = await Rental.findById(id)
+    if (!rental) return res.status(404).send('Rental record not found')
 
+    return res.send(rental);
 })
 
 router.post('/', async(req, res) => {
@@ -31,7 +34,8 @@ router.post('/', async(req, res) => {
     if (!customer) return res.status(400).send('Customer not found')
     
     // Create new rental
-    let rental = new Rental({
+    try{
+        let rental = new Rental({
         customer: {
             _id: customer._id, 
             name: customer.name, 
@@ -43,7 +47,7 @@ router.post('/', async(req, res) => {
             dailyRentalRate: movie.dailyRentalRate
         }
     })
-    if ('isGold' in req.body) rental.customer.isGold = customer.isGold
+    if ('isGold' in req.body && 'isGold' in customer) rental.customer.isGold = customer.isGold
 
     rental = await rental.save();
 
@@ -51,6 +55,14 @@ router.post('/', async(req, res) => {
     movie.save();
 
     res.send(rental);
+    }
+
+    catch(ex){
+        for (field in ex.errors){
+            res.status(400).send(ex.errors[field].properties.message)
+            console.error('Error:', ex.errors[field].properties.message)
+        }
+    }
 })
 
 
