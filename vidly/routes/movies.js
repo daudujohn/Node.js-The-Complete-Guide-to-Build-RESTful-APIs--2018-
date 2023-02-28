@@ -42,14 +42,14 @@ router.post('/', async(req, res) => {
     const genre = await Genre.findById(req.body.genreId)
     if (!genre) return res.status(400).send('Genre does not exist')
     try{
-        let movie = new Movie({
+        const movie = new Movie({
             title: req.body.title, 
             genre: genre, 
             numberInStock: req.body.numberInStock, 
             dailyRentalRate: req.body.dailyRentalRate
         });  
 
-        movie = await movie.save();
+        await movie.save();
         return res.send(movie)
     }
     catch(ex){
@@ -71,7 +71,7 @@ router.put('/:id', async(req, res) => {
     const genre = await Genre.findById(req.body.genreId)
     if (!genre) return res.status(400).send('Genre does not exist')
 
-    let updatedMovie = {
+    const updatedMovie = {
         title: req.body.title, 
         numberInStock: req.body.numberInStock, 
         dailyRentalRate: req.body.dailyRentalRate, 

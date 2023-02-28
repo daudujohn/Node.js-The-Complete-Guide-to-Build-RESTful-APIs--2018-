@@ -35,26 +35,26 @@ router.post('/', async(req, res) => {
     
     // Create new rental
     try{
-        let rental = new Rental({
-        customer: {
-            _id: customer._id, 
-            name: customer.name, 
-            phone: customer.phone
-        }, 
-        movie: {
-            _id: movie._id, 
-            title: movie.title, 
-            dailyRentalRate: movie.dailyRentalRate
-        }
-    })
-    if ('isGold' in req.body && 'isGold' in customer) rental.customer.isGold = customer.isGold
+        const rental = new Rental({
+            customer: {
+                _id: customer._id, 
+                name: customer.name, 
+                phone: customer.phone
+            }, 
+            movie: {
+                _id: movie._id, 
+                title: movie.title, 
+                dailyRentalRate: movie.dailyRentalRate
+            }
+        })
+        if ('isGold' in req.body && 'isGold' in customer) rental.customer.isGold = customer.isGold
 
-    rental = await rental.save();
+        await rental.save();
 
-    movie.numberInStock--;
-    movie.save();
+        movie.numberInStock--;
+        movie.save();
 
-    res.send(rental);
+        res.send(rental);
     }
 
     catch(ex){

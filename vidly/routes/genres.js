@@ -41,10 +41,10 @@ router.post('/', async (req, res) => {
 
     // if valid, add it to genres
     try{
-        let genre = new Genre({
+        const genre = new Genre({
             name: req.body.name
         })
-        genre = await genre.save();
+        await genre.save();
     
         // return added genre
         res.send(genre);

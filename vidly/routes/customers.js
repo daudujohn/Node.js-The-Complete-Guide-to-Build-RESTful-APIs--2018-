@@ -36,13 +36,13 @@ router.post('/', async(req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     try{
-        let customer = new Customer({
+        const customer = new Customer({
             name: req.body.name, 
             phone: req.body.phone
         })
         if(req.body.isGold || !req.body.isGold) customer.isGold = req.body.isGold;
 
-        customer = await customer.save()
+        await customer.save()
 
         res.send(customer);
     }
