@@ -12,8 +12,11 @@ const genreSchema = mongoose.Schema({
         validate: {
             isAsync: true, 
             validator: async function(value) {
-              const existingGenre = await mongoose.model('Genre').findOne({ name: value });
-              return true;
+                if(this.parent().isNew){
+                    const existingGenre = await mongoose.model('Genre').findOne({ name: value });
+                    return !existingGenre;
+                }
+                return true;
             },
             message: 'Genre already exists',
         }

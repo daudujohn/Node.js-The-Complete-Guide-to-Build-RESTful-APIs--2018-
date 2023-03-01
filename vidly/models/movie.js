@@ -14,8 +14,11 @@ const movieSchema = new mongoose.Schema({
         validate: {
             isAsync: true, 
             validator: async function(value) {
-              const existingMovie = await mongoose.model('Movie').findOne({ title: value });
-              return !existingMovie;
+                if(this.parent().isNew){
+                    const existingMovie = await mongoose.model('Movie').findOne({ title: value });
+                    return !existingMovie;
+                }
+                return true;
             },
             message: 'Movie already exists',
         } 
