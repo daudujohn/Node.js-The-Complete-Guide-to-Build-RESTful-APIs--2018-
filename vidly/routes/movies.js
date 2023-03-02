@@ -27,7 +27,7 @@ router.get('/:id', async (req, res) => {
     catch(ex) {
         for (field in ex.errors){
             res.send(ex.errors[field].properties.message)
-            console.log(ex.errors[field].properties.message)
+            console.log('Error:', ex.errors[field].properties.message)
         }
     }
 })
