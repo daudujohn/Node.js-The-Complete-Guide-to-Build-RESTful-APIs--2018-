@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const mongoose = require('mongoose')
 const Joi = require('joi')
 const express = require('express');
@@ -5,7 +6,9 @@ const router = express.Router();
 const {Rental, validateRental} = require('../models/rental');
 const { Movie } = require('../models/movie');
 const {Customer} = require('../models/customer');
-const { custom } = require('joi');
+const Fawn = require('fawn');
+
+Fawn.init("mongodb://localhost/vidly")
 
 router.get('/', async(req, res) => {
     const rentals = await Rental.find().sort('-dateOut')
@@ -19,7 +22,7 @@ router.get('/:id', async(req, res) => {
     return res.send(rental);
 })
 
-router.post('/', async(req, res) => {
+router.post('/', auth, async(req, res) => {
     // Validate request body
     const {error} = validateRental(req.body)
     if (error) return res.status(400).send(error.details[0].message)
@@ -49,10 +52,17 @@ router.post('/', async(req, res) => {
         })
         if ('isGold' in req.body && 'isGold' in customer) rental.customer.isGold = customer.isGold
 
-        await rental.save();
+        // new Fawn.Task()
+        //     .save('rentals', rental)
+        //     .update('movies', {_id: movie._id}, {
+        //         $inc: {numberInStock: -1}
+        //     })
+        //     .run();
 
         movie.numberInStock--;
         movie.save();
+        await rental.save()
+
 
         res.send(rental);
     }

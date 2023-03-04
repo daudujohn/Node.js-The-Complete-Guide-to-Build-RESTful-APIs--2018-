@@ -1,8 +1,10 @@
+const auth = require('../middleware/auth');
 const Joi = require('joi')
 const {Customer, validateCustomer} = require('../models/customer')
 const express = require('express')
 const router = express.Router();
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const admin = require('../middleware/admin');
 
 router.get('/', async(req, res) => {
     try{
@@ -24,7 +26,7 @@ router.get('/:id', async(req, res) => {
     return res.send(customer);
 })
 
-router.post('/', async(req, res) => {
+router.post('/', auth, async(req, res) => {
     // validate the request body
     const schema = Joi.object({
         name: Joi.string().min(3).required(), 
@@ -54,7 +56,7 @@ router.post('/', async(req, res) => {
     }
 })
 
-router.put('/:id', async(req, res) => {
+router.put('/:id', auth, async(req, res) => {
     // validate the request body
     const schema = Joi.object({
         name: Joi.string().min(3), 
@@ -80,7 +82,7 @@ router.put('/:id', async(req, res) => {
     return res.send(customer)
 })
 
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', [auth, admin], async(req, res) => {
     const customer = await Customer.findByIdAndRemove(req.params.id)
 
     if(!customer) return res.status(400).send('Customer not found')

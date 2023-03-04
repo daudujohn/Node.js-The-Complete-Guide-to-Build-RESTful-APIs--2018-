@@ -1,3 +1,5 @@
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const {User, validateUser} = require('../models/user');
@@ -20,18 +22,9 @@ router.get('/', async(req, res) => {
     }
 })
 
-router.get('/:id', async (req, res) => {
-    // check if the user id is valid
-    try{
-        const user = await User.findById(req.params.id)
-        return res.send(user)
-    }
-    catch(ex) {
-        for (field in ex.errors){
-            res.send(ex.errors[field].properties.message)
-            console.log('Error:', ex.errors[field].properties.message)
-        }
-    }
+router.get('/me', auth, async (req, res) => {
+    const user = await User.findById(req.user._id).select('-password');
+    return res.send(user)
 })
 
 router.post('/', async(req, res) => {
@@ -73,7 +66,7 @@ router.put('/:id', async(req, res) => {
     return res.send(user)
 })
 
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', [auth, admin], async(req, res) => {
     try{
         const user = await User.findByIdAndRemove(req.params.id)
         return res.send(user)

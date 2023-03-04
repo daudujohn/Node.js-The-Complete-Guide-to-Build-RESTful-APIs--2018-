@@ -1,3 +1,5 @@
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin')
 const mongoose = require('mongoose')
 const Joi = require('joi')
 const express = require('express');
@@ -29,7 +31,7 @@ router.get('/:id', async (req, res) => {
     return res.send(genre);
 })
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     // if id doesnt exist, validate
     const schema = Joi.object({
         name: Joi.string().min(3).required()
@@ -57,7 +59,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     // if id exists, validate it
     const schema = Joi.object({
         name: Joi.string().min(3).required()
@@ -81,7 +83,7 @@ router.put('/:id', async (req, res) => {
     return res.send(genre)
 })
 
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', [auth, admin], async(req, res) => {
     // if id exists
     const genre = await Genre.findByIdAndRemove(req.params.id)
 
