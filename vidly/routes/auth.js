@@ -9,24 +9,16 @@ router.post('/', async(req, res) => {
     const {error} = validate(req.body)
     if (error) return res.status(400).send(error.details[0].message)
 
-    try{
-        // check if the user exists
-        let user = await User.findOne({email: req.body.email})
-        if (!user) return res.status(400).send('Invalid email or password');
-        // if user exists, validate the plain password
-        const validPassword = await bcrypt.compare(req.body.password, user.password)
-        if (!validPassword) return res.status(400).send('Invalid email or password');
+    // check if the user exists
+    let user = await User.findOne({email: req.body.email})
+    if (!user) return res.status(400).send('Invalid email or password');
+    // if user exists, validate the plain password
+    const validPassword = await bcrypt.compare(req.body.password, user.password)
+    if (!validPassword) return res.status(400).send('Invalid email or password');
 
-        const token = user.generateAuthToken();
+    const token = user.generateAuthToken();
 
-        res.send(token)
-    }
-    catch(ex) {
-        for (field in ex.errors){
-            res.send(ex.errors[field].properties.message)
-            console.log('Error:', ex.errors[field].properties.message)
-        }
-    }
+    res.send(token)
 })
 
 

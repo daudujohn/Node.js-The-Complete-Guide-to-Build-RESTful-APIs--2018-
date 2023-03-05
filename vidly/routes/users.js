@@ -10,16 +10,8 @@ const mongoose = require('mongoose')
 
 
 router.get('/', async(req, res) => {
-    try{
         const users = await User.find().sort('name')
         return res.send(users)
-    }
-    catch(ex) {
-        for (field in ex.errors){
-            res.send(ex.errors[field].properties.message)
-            console.log(ex.errors[field].properties.message)
-        }
-    }
 })
 
 router.get('/me', auth, async (req, res) => {
@@ -31,26 +23,18 @@ router.post('/', async(req, res) => {
     const {error} = validateUser(req.body)
     if (error) return res.status(400).send(error.details[0].message)
 
-    try{
-        let user = await User.findOne({email: req.body.email})
-        if (user) return res.status(400).send('User already registered.');
+    let user = await User.findOne({email: req.body.email})
+    if (user) return res.status(400).send('User already registered.');
 
-        user = new User(_.pick(req.body, ['name', 'email', 'password']))
+    user = new User(_.pick(req.body, ['name', 'email', 'password']))
 
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(user.password, salt)
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt)
 
-        await user.save();
+    await user.save();
 
-        const token = user.generateAuthToken();
-        res.header("x-auth-token", token).send(_.pick(user, ['_id', 'name', 'email']))
-    }
-    catch(ex) {
-        for (field in ex.errors){
-            res.send(ex.errors[field].properties.message)
-            console.log('Error:', ex.errors[field].properties.message)
-        }
-    }
+    const token = user.generateAuthToken();
+    res.header("x-auth-token", token).send(_.pick(user, ['_id', 'name', 'email']))
 })
 
 router.put('/:id', async(req, res) => {
@@ -67,16 +51,8 @@ router.put('/:id', async(req, res) => {
 })
 
 router.delete('/:id', [auth, admin], async(req, res) => {
-    try{
         const user = await User.findByIdAndRemove(req.params.id)
         return res.send(user)
-    }
-    catch(ex) {
-        for (field in ex.errors){
-            res.send(ex.errors[field].properties.message)
-            console.log(ex.errors[field].properties.message)
-        }
-    }
 })
 
     module.exports = router;

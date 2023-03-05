@@ -37,42 +37,33 @@ router.post('/', auth, async(req, res) => {
     if (!customer) return res.status(400).send('Customer not found')
     
     // Create new rental
-    try{
-        const rental = new Rental({
-            customer: {
-                _id: customer._id, 
-                name: customer.name, 
-                phone: customer.phone
-            }, 
-            movie: {
-                _id: movie._id, 
-                title: movie.title, 
-                dailyRentalRate: movie.dailyRentalRate
-            }
-        })
-        if ('isGold' in req.body && 'isGold' in customer) rental.customer.isGold = customer.isGold
-
-        // new Fawn.Task()
-        //     .save('rentals', rental)
-        //     .update('movies', {_id: movie._id}, {
-        //         $inc: {numberInStock: -1}
-        //     })
-        //     .run();
-
-        movie.numberInStock--;
-        movie.save();
-        await rental.save()
-
-
-        res.send(rental);
-    }
-
-    catch(ex){
-        for (field in ex.errors){
-            res.status(400).send(ex.errors[field].properties.message)
-            console.error('Error:', ex.errors[field].properties.message)
+    const rental = new Rental({
+        customer: {
+            _id: customer._id, 
+            name: customer.name, 
+            phone: customer.phone
+        }, 
+        movie: {
+            _id: movie._id, 
+            title: movie.title, 
+            dailyRentalRate: movie.dailyRentalRate
         }
-    }
+    })
+    if ('isGold' in req.body && 'isGold' in customer) rental.customer.isGold = customer.isGold
+
+    // new Fawn.Task()
+    //     .save('rentals', rental)
+    //     .update('movies', {_id: movie._id}, {
+    //         $inc: {numberInStock: -1}
+    //     })
+    //     .run();
+
+    movie.numberInStock--;
+    movie.save();
+    await rental.save()
+
+
+    res.send(rental);
 })
 
 

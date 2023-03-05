@@ -7,16 +7,8 @@ const mongoose = require('mongoose');
 const admin = require('../middleware/admin');
 
 router.get('/', async(req, res) => {
-    try{
-        const customers = await Customer.find().sort('name')
-        return res.send(customers)
-    }
-    catch(ex) {
-        for (field in ex.errors){
-            res.send(ex.errors[field].properties.message)
-            console.log(ex.errors[field].properties.message)
-        }
-    }
+    const customers = await Customer.find().sort('name')
+    return res.send(customers)
 })
 
 router.get('/:id', async(req, res) => {
@@ -36,24 +28,15 @@ router.post('/', auth, async(req, res) => {
     const { error } = validateCustomer(schema, req.body)
 
     if (error) return res.status(400).send(error.details[0].message);
+    const customer = new Customer({
+        name: req.body.name, 
+        phone: req.body.phone
+    })
+    if(req.body.isGold || !req.body.isGold) customer.isGold = req.body.isGold;
 
-    try{
-        const customer = new Customer({
-            name: req.body.name, 
-            phone: req.body.phone
-        })
-        if(req.body.isGold || !req.body.isGold) customer.isGold = req.body.isGold;
+    await customer.save()
 
-        await customer.save()
-
-        res.send(customer);
-    }
-    catch(ex){
-        for (field in ex.errors){
-            res.status(400).send(ex.errors[field].properties.message)
-            console.error('Error:', ex.errors[field].properties.message)
-        }
-    }
+    res.send(customer);
 })
 
 router.put('/:id', auth, async(req, res) => {

@@ -4,21 +4,14 @@ const mongoose = require('mongoose')
 const Joi = require('joi')
 const express = require('express');
 const router = express.Router();
-const {Genre, validateGenre} = require('../models/genre')
+const {Genre, validateGenre} = require('../models/genre');
+
 
 router.get('/', async (req, res) => {
-    try{
-        const genres = await Genre.find().sort('name')
-        res.send(genres);
-        res.end();
-    }
-    catch(ex) {
-        for (field in ex.errors){
-            res.send(ex.errors[field].properties.message)
-            console.log(ex.errors[field].properties.message)
-        }
-    }
-})
+    const genres = await Genre.find().sort('name')
+    res.send(genres);
+    res.end();
+});
 
 router.get('/:id', async (req, res) => {
     // check if id exists
@@ -42,21 +35,13 @@ router.post('/', auth, async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message)
 
     // if valid, add it to genres
-    try{
-        const genre = new Genre({
-            name: req.body.name
-        })
-        await genre.save();
-    
-        // return added genre
-        res.send(genre);
-    }
-    catch(ex){
-        for (field in ex.errors){
-            res.status(400).send(ex.errors[field].properties.message)
-            console.error('Error:', ex.errors[field].properties.message)
-        }
-    }
+    const genre = new Genre({
+        name: req.body.name
+    })
+    await genre.save();
+
+    // return added genre
+    res.send(genre);
 })
 
 router.put('/:id', auth, async (req, res) => {
