@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const winston = require('winston');
 
 module.exports = function () {
-    mongoose.connect(config.get('database.conn_string'))
-        .then(() => {winston.info('Connected to MongoDB...')})
+    const db = config.get('database.conn_string');
+    mongoose.connect(db)
+        .then(() => {winston.info(`Connected to ${db}...`)})
 }
