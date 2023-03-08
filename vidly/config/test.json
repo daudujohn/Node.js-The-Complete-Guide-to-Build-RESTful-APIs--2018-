@@ -1,0 +1,6 @@
+{
+    "database": {
+        "conn_string": "mongodb://localhost/vidly_test"
+    }, 
+    "jwtPrivateKey": "1234"
+}
