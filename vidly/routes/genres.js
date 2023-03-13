@@ -1,3 +1,4 @@
+const validateObjectId = require('../middleware/validateObjectId');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin')
 const mongoose = require('mongoose')
@@ -13,8 +14,9 @@ router.get('/', async (req, res) => {
     res.end();
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateObjectId, async (req, res) => {
     // check if id exists
+    
     const genre = await Genre.findById(req.params.id);
     
     // if it doesn't, return 404
@@ -26,10 +28,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', auth, async (req, res) => {
     // if id doesnt exist, validate
-    const schema = Joi.object({
-        name: Joi.string().min(3).required()
-    })
-    const {error} = validateGenre(schema, req.body)
+    const {error} = validateGenre(req.body)
 
     // if invalid return 400
     if (error) return res.status(400).send(error.details[0].message)
@@ -44,12 +43,9 @@ router.post('/', auth, async (req, res) => {
     res.send(genre);
 })
 
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', [auth, validateObjectId], async (req, res) => {
     // if id exists, validate it
-    const schema = Joi.object({
-        name: Joi.string().min(3).required()
-    })
-    const {error} = validateGenre(schema, req.body)
+    const {error} = validateGenre(req.body)
     
     // if invalid, return 400
     if (error) return res.status(400).send(error.details[0].message);
@@ -68,7 +64,7 @@ router.put('/:id', auth, async (req, res) => {
     return res.send(genre)
 })
 
-router.delete('/:id', [auth, admin], async(req, res) => {
+router.delete('/:id', [auth, admin, validateObjectId], async(req, res) => {
     // if id exists
     const genre = await Genre.findByIdAndRemove(req.params.id)
 
