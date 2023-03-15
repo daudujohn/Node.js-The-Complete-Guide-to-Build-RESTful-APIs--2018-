@@ -1,3 +1,4 @@
+const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const mongoose = require('mongoose')
@@ -18,12 +19,7 @@ router.get('/:id', async (req, res) => {
         return res.send(movie)
 })
 
-router.post('/', auth, async(req, res) => {
-    const {error} = validateMovie(req.body)
-
-    // if invalid return 400
-    if (error) return res.status(400).send(error.details[0].message)
-
+router.post('/', [auth, validate(validateMovie)], async(req, res) => {
     // if valid, check if the genre of the movie exist before adding the movie
     const genre = await Genre.findById(req.body.genreId)
     if (!genre) return res.status(400).send('Genre does not exist')
@@ -39,11 +35,8 @@ router.post('/', auth, async(req, res) => {
     return res.send(movie)
 })
 
-router.put('/:id', auth, async(req, res) => {
-    // check if req.body is valid
-    const {error} = validateMovie(req.body)
-    if (error) return res.status(400).send(error.details[0].message)
-    
+router.put('/:id', [auth, validate(validateMovie)], async(req, res) => {
+   
     // validate the genre before updating the movie
     const genre = await Genre.findById(req.body.genreId)
     if (!genre) return res.status(400).send('Genre does not exist')

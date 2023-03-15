@@ -1,3 +1,4 @@
+const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const bcrypt = require('bcrypt');
@@ -19,9 +20,7 @@ router.get('/me', auth, async (req, res) => {
     return res.send(user)
 })
 
-router.post('/', async(req, res) => {
-    const {error} = validateUser(req.body)
-    if (error) return res.status(400).send(error.details[0].message)
+router.post('/', validate(validateUser), async(req, res) => {
 
     let user = await User.findOne({email: req.body.email})
     if (user) return res.status(400).send('User already registered.');
@@ -37,11 +36,7 @@ router.post('/', async(req, res) => {
     res.header("x-auth-token", token).send(_.pick(user, ['_id', 'name', 'email']))
 })
 
-router.put('/:id', async(req, res) => {
-    // check if req.body is valid
-    const {error} = validateMovie(req.body)
-    if (error) return res.status(400).send(error.details[0].message)
-
+router.put('/:id', validate(validateUser), async(req, res) => {
     const updatedUser = _.pick(req.body, ['name', 'email', 'password'])
     
     const user = await User.findByIdAndUpdate(req.params.id, updatedUser, {new: true})

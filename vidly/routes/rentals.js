@@ -1,3 +1,4 @@
+const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const mongoose = require('mongoose')
 const Joi = require('joi')
@@ -22,11 +23,7 @@ router.get('/:id', async(req, res) => {
     return res.send(rental);
 })
 
-router.post('/', auth, async(req, res) => {
-    // Validate request body
-    const {error} = validateRental(req.body)
-    if (error) return res.status(400).send(error.details[0].message)
-
+router.post('/', [auth, validate(validateRental)], async(req, res) => {
     // check if movie exists in the db
     const movie = await Movie.findById(req.body.movieId)
     if (!movie) return res.status(400).send('Movie not found')
