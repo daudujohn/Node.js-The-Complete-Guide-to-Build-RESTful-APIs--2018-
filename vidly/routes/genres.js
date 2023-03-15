@@ -1,3 +1,4 @@
+const validate = require('../middleware/validate');
 const validateObjectId = require('../middleware/validateObjectId');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin')
@@ -26,13 +27,7 @@ router.get('/:id', validateObjectId, async (req, res) => {
     return res.send(genre);
 })
 
-router.post('/', auth, async (req, res) => {
-    // if id doesnt exist, validate
-    const {error} = validateGenre(req.body)
-
-    // if invalid return 400
-    if (error) return res.status(400).send(error.details[0].message)
-
+router.post('/', [auth, validate(validateGenre)], async (req, res) => {
     // if valid, add it to genres
     const genre = new Genre({
         name: req.body.name
@@ -43,13 +38,7 @@ router.post('/', auth, async (req, res) => {
     res.send(genre);
 })
 
-router.put('/:id', [auth, validateObjectId], async (req, res) => {
-    // if id exists, validate it
-    const {error} = validateGenre(req.body)
-    
-    // if invalid, return 400
-    if (error) return res.status(400).send(error.details[0].message);
-
+router.put('/:id', [auth, validate(validateGenre), validateObjectId], async (req, res) => {
     // if valid, update genre
     const genre = await Genre.findByIdAndUpdate(req.params.id, {
         name: req.body.name
