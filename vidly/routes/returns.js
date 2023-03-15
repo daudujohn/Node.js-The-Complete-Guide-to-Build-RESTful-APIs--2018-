@@ -1,4 +1,3 @@
-const moment = require('moment');
 const express = require('express');
 const { Rental } = require('../models/rental');
 const router = express.Router();
@@ -16,9 +15,8 @@ router.post('/', [auth, validate(validateReturn)], async(req, res) => {
     if (rental.dateReturned)
         return res.status(400).send('Rental has already been processed')
 
-    rental.dateReturned = new Date()
-    const rentalDays = moment().diff(rental.dateOut, 'days')
-    rental.rentalFee = rentalDays * rental.movie.dailyRentalRate
+    rental.return();
+
     await rental.save();
 
     await Movie.updateOne({_id: req.body.movieId}, {
