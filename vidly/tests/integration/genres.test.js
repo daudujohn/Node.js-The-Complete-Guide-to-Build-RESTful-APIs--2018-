@@ -10,7 +10,7 @@ describe('/api/genres', () => {
         server = require('../../index')
     });
     afterEach(async () => {
-        server.close();
+        await server.close();
         await Genre.deleteMany({});
     });
 
@@ -179,7 +179,7 @@ describe('/api/genres', () => {
             _id = genre._id;
 
             const res = await exec();
-          
+        //   
             expect(res.status).toBe(200);
         })
         it('should return deleted genre', async() => {
