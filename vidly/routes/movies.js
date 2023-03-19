@@ -16,6 +16,8 @@ router.get('/', async(req, res) => {
 router.get('/:id', async (req, res) => {
     // check if movie id is valid
         const movie = await Movie.findById(req.params.id)
+        // if it doesn't, return 404
+        if (!movie) return res.status(404).send('Movie not found')
         return res.send(movie)
 })
 
